@@ -4,6 +4,7 @@ import hello.login.domain.member.Member;
 import hello.login.domain.member.MemberRepository;
 import hello.login.web.session.SessionManager;
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpSession;
 import jakarta.websocket.Session;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -48,7 +49,7 @@ public class HomeController {
         return "/loginHome";
     }
 
-    @GetMapping("/")
+    //@GetMapping("/")
     public String homeLoginV2(HttpServletRequest request, Model model) {
 
         Member loginMember = (Member)sessionManager.getSession(request);
@@ -58,6 +59,20 @@ public class HomeController {
         }
 
         // 이번에 진짜로 로그인 상태 유지 중지 사람
+        model.addAttribute("member",loginMember);
+        return "/loginHome";
+    }
+
+    @GetMapping("/")
+    public String homeLoginV3(HttpServletRequest request, Model model) {
+
+        HttpSession session = request.getSession(false);
+
+        if(session == null) {
+            return "/home";
+        }
+
+        Member loginMember = (Member)session.getAttribute(SessionConst.LOGIN_MEMBER);
         model.addAttribute("member",loginMember);
         return "/loginHome";
     }

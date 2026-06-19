@@ -3,10 +3,12 @@ package hello.login.web.login;
 
 import hello.login.domain.login.LoginService;
 import hello.login.domain.member.Member;
+import hello.login.web.SessionConst;
 import hello.login.web.session.SessionManager;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Controller;
@@ -53,7 +55,7 @@ public class LoginController {
 
     }
 
-    @PostMapping("/login")
+    //@PostMapping("/login")
     public String loginV2(@Validated @ModelAttribute LoginForm loginForm, BindingResult bindingResult, HttpServletResponse response) {
 
         if(bindingResult.hasErrors()) {
@@ -71,18 +73,51 @@ public class LoginController {
         return "redirect:/";
 
     }
+
+    @PostMapping("/login")
+    public String loginV3(@Validated @ModelAttribute LoginForm loginForm, BindingResult bindingResult, HttpServletRequest request) {
+
+        if(bindingResult.hasErrors()) {
+            return "/login/loginForm";
+        }
+
+        Member loginMember = loginservice.login(loginForm.getLoginId(), loginForm.getPassword());
+        if(loginMember == null) {
+            bindingResult.reject("loginFail","아이디 또는 비밀번호가 맞지 않습니다.");
+            return "/login/loginForm";
+        }
+
+        // HttpSeverletRequest, 즉 서블릿은 세션 기능을 지원한다.
+        // 만약에 해당 요청이 이미 세션이 없으면 새롭게 세션을 만들어 주고,
+        // 이미 세션이 있다면 그 세션을 반환한다.
+        HttpSession session = request.getSession();
+        // 새롭게 만들어진 세션에 Member 정보를 저장
+        session.setAttribute(SessionConst.LOGIN_MEMBER,loginMember);
+        return "redirect:/";
+
+    }
+
+
     //@PostMapping("/logout")
     public String logoutV1(HttpServletResponse response) {
         expireCookie(response, "memberId");
         return "redirect:/";
     }
 
-    @PostMapping("/logout")
+    //@PostMapping("/logout")
     public String logoutV2(HttpServletRequest request) {
         sessionManager.expire(request);
         return "redirect:/";
     }
 
+    @PostMapping("/logout")
+    public String logoutV3(HttpServletRequest request) {
+        HttpSession session = request.getSession(false); // true로 해버리면 세션이 새롭게 생성되기에 false로 해줘야 함.
+        if(session != null) {                                  // true로 해버리면 로그인하지 않은 유저에 대해 세션이 생겨 버린다
+            session.invalidate(); // 세션 삭제
+        }
+        return "redirect:/";
+    }
 
     private void expireCookie(HttpServletResponse response, String cookieName) {
         Cookie cookie = new Cookie(cookieName, null);
