@@ -1,0 +1,17 @@
+request.getSession();
+-> getSession()에는 true, false가 들어 갈 수가 있다. 
+
+request.getSession(true)인 경우(디폴트 설정이 true)
+-> 세션이 있으면 세션 반환, 없으면 세션 새롭게 생성
+
+request.getSession(false)인 경우
+-> 세션이 있으면 세션 반환, 없으면 세션 새롭게 생성하지 않음
+
+http://localhost:8080/;jsessionid=F59911518B921DF62D09F0DF8F83F872
+-> 서블릿이 지원하는 세션 기능을 사용하게 되면, 최초 로그인 시 URL에 jssessionId가 붙는다.
+이는 서버 입장에서 웹 브라우저가 쿠키 저장 기능을 지원하지 않았을 때를 대비하여 url 파라미터에 세션ID를 항상
+붙여 놓는 것이다. 그러나 이거의 단점은 모든 페이지에 대해서 jsessionId를 붙여 줘야 하기 때문에 너무 개발이 불편해 지는
+단점에 거의 사용하지 않는다(물론 타임리프는 이 jsessionId관련하여 편의 기능을 제공해 준다고는 한다)
+
+server.servlet.session.tracking-modes=cookie
+-> 만약에 jsessionId를 url에 포함시키고 싶지 않으면 위과 같이 설정해주면 된다.
