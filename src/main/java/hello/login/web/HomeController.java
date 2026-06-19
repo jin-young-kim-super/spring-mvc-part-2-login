@@ -2,6 +2,9 @@ package hello.login.web;
 
 import hello.login.domain.member.Member;
 import hello.login.domain.member.MemberRepository;
+import hello.login.web.session.SessionManager;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.websocket.Session;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Controller;
@@ -15,6 +18,8 @@ import org.springframework.web.bind.annotation.GetMapping;
 public class HomeController {
 
     private final MemberRepository memberRepository;
+    private final SessionManager sessionManager;
+
 
     //@GetMapping("/")
     public String home() {
@@ -22,9 +27,9 @@ public class HomeController {
     }
 
 
-    @GetMapping("/")
+    //@GetMapping("/")
     // required=false : 로그인을 하지 않은 사람도 들어 올 수 있어야 하기 때문이다.
-    public String homeLogin(@CookieValue(name = "memberId", required = false) Long memberId, Model model) {
+    public String homeLoginV1(@CookieValue(name = "memberId", required = false) Long memberId, Model model) {
 
         // 로그인을 아직 하지 않은 사람(쿠키를 가지고 있지 않은 사람)
         if(memberId == null) {
@@ -43,5 +48,17 @@ public class HomeController {
         return "/loginHome";
     }
 
+    @GetMapping("/")
+    public String homeLoginV2(HttpServletRequest request, Model model) {
 
+        Member loginMember = (Member)sessionManager.getSession(request);
+
+        if(loginMember == null) {
+            return "/home";
+        }
+
+        // 이번에 진짜로 로그인 상태 유지 중지 사람
+        model.addAttribute("member",loginMember);
+        return "/loginHome";
+    }
 }
