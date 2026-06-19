@@ -1,0 +1,7 @@
+HttpServletRequest, HttpServletResponse는 모두 인터페이스이다. 
+요청이 들어 오면 톰캣이 그 요청 HTTP 헤더와 바디를 모두 HttpServletRequest 인터페이스의 구현체로 변환하여 그걸 우리가 다시 인터페이스 HttpServletRequest 인터페이스를 받아서 사용으르 한다. 
+즉 HttpServletRequest, HttpServletResponse 구현체를 개발자는 잘 알지 못하고, DIP 법칙에 의해서 아는 것도 별로 좋지가 않다. 
+
+그럼 SessionManager의 테스트 코드에서 만약에 톰캣을 거치지 않아서 HttpServletResponse 인퍼페이스의 구현체가 없는 데, 그런데 테스트 할 떄 필요할 때 도대체 어떻게 해야 할까
+이러한 상황을 대비하여 스프링에서는 HttpServeltResponse의 테스트 전용? 구현체를 만들어 놓았다. 그게 바로 MockHttpServletResponse이다. 
+
