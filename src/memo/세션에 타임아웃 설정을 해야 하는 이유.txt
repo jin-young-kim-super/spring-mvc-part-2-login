@@ -9,7 +9,7 @@
 서블릿이 제공하는 HttpSession은 이 기능을 지원한다.
 
 글로벌 세션 타임 설정 시(즉, 모~~~든 세션에 대해 적용하고 싶을 떄)
-session.setMaxInactiveInterval(1800);을 application.properties를 설정하면 된다
+server.servlet.session.tracking-modes=cookie을 application.properties를 설정하면 된다
 
 특정 세션 타임 설정
 session.setMaxInactiveInterval(1800);
