@@ -2,7 +2,9 @@ package hello.login;
 
 
 import hello.login.web.filter.LogFilter;
+import hello.login.web.filter.LoginCheckFilter;
 import jakarta.servlet.Filter;
+
 import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -22,5 +24,20 @@ public class WebConfig {
         filterFilterRegistrationBean.addUrlPatterns("/*");
         return filterFilterRegistrationBean;
     }
+
+    @Bean
+    public FilterRegistrationBean loginCheckFilter() {
+        FilterRegistrationBean<Filter> filterFilterRegistrationBean = new FilterRegistrationBean<>();
+        filterFilterRegistrationBean.setFilter(new LoginCheckFilter());
+        filterFilterRegistrationBean.setOrder(2);
+        // addURlPattern("/*")로 지정한 이유
+        // -> 우리는 미래에 개발될 새로운 요청에 대해서도 LoginCheckFilter를 적용해야 한다.
+        // 그러나 여기서 만약 일일이 구체적인 URL을 매핑을 해 버리면, 새롭게 개발될 요청에 대해서도 로그인 인증이
+        // 필요시 기입을 해 줘야 한다. 그래서 로그인 인증 체크 여부는 LogCheckFilter의 whitelist를 통해
+        // 적용 여부를 결정하고 "/*" 지정을 통해 미래에 개발될 요청 URL에 대해서 일단은 LogCheckFilter까지는 가게 한다.
+        filterFilterRegistrationBean.addUrlPatterns("/*");
+        return filterFilterRegistrationBean;
+    }
+
 
 }
