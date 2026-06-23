@@ -3,6 +3,7 @@ package hello.login;
 
 import hello.login.web.filter.LogFilter;
 import hello.login.web.filter.LoginCheckFilter;
+import hello.login.web.interceptor.LoginCheckInterceptor;
 import hello.login.web.interceptor.LoginInterceptor;
 import jakarta.servlet.Filter;
 
@@ -17,10 +18,20 @@ public class WebConfig implements WebMvcConfigurer {
 
     @Override
     public void addInterceptors(InterceptorRegistry registry) {
+
+        // 서블릿 필터와는 다르게 whitelist 같은 거 만들 필요 없이 등록 과정에서
+        // path 등록을 손쉽게 할 수가 있다.
+        // 협업 시 이 등록 코드만 보고, 어떤 파일에 로그인 검증 로직이 적용되는지 한 눈에 알아 볼 수가 있다.
+
         registry.addInterceptor(new LoginInterceptor())
                 .order(1)
                 .addPathPatterns("/**")
                 .excludePathPatterns("/css/**","/*.ico","/error");
+
+        registry.addInterceptor(new LoginCheckInterceptor())
+                .order(2)
+                .addPathPatterns("/**")
+                .excludePathPatterns("/", "/members/add","/login","/logout","/css/**","/*.ico","/error");
     }
 
     // @ServletComponent, @WebServlet을 이용하여 순수 서블릿 등록이 가능하다.
@@ -36,7 +47,7 @@ public class WebConfig implements WebMvcConfigurer {
         return filterFilterRegistrationBean;
     }
 
-    @Bean
+    //@Bean
     public FilterRegistrationBean loginCheckFilter() {
         FilterRegistrationBean<Filter> filterFilterRegistrationBean = new FilterRegistrationBean<>();
         filterFilterRegistrationBean.setFilter(new LoginCheckFilter());
