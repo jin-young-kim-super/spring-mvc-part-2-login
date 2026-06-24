@@ -2,6 +2,7 @@ package hello.login.web;
 
 import hello.login.domain.member.Member;
 import hello.login.domain.member.MemberRepository;
+import hello.login.web.argumentresolver.Login;
 import hello.login.web.session.SessionManager;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
@@ -77,7 +78,7 @@ public class HomeController {
         return "/loginHome";
     }
 
-    @GetMapping("/")
+   // @GetMapping("/")
     public String homeLoginV3Spring(@SessionAttribute(name = SessionConst.LOGIN_MEMBER, required = false) Member loginMember, Model model) {
 
         // @SessionAttribute = request.getSession(false) + (Member)session.getAttribute(SessionConst.LOGIN_MEMBER)
@@ -91,4 +92,15 @@ public class HomeController {
         return "/loginHome";
     }
 
+    // 만약 LoginMemberArgumentResolver을 구현하지 않았으면, @Login은 그냥 무시되고 Argument Resolver에서 @ModelAttribute를 처리하는 Argumente Resolver 구현체가 호출이 된다.
+    @GetMapping("/")
+    public String homeLoginV3ArgumentResolver(@Login Member loginMember, Model model) {
+
+        if(loginMember == null) {
+            return "/home";
+        }
+
+        model.addAttribute("member",loginMember);
+        return "/loginHome";
+    }
 }

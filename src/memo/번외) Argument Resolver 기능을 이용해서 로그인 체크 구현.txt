@@ -1,0 +1,2 @@
+@SessionAttribute(name = SessionConst.LOGIN_MEMBER, required = false) Member loginMember, 이걸 @Login이라는 애노테이션을 직접 만들어서 코드를 훨씬 짧게 변경 가능하다.
+-> Argument Resolver를 이번에 우리가 직접 확장시켜서 구현해볼 것이다. 
